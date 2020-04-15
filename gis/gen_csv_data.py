@@ -3,7 +3,7 @@ import sys
 import pyarrow as pa
 
 row_per_batch = 10000000
-rows = 0
+rows = 1
 to_hdfs = False
 output_path = ""
 test_name = []

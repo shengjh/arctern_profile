@@ -115,7 +115,7 @@ def run_st_point(spark):
     file_path = os.path.join(data_path, 'st_point.csv')
     points_df = spark.read.csv(file_path, schema='x double, y double').cache()
     points_df.createOrReplaceTempView("points")
-    sql = "select ST_AsText(ST_Point(x, y)) from points"
+    sql = "select ST_Point(x, y) from points"
     calculate_with_timmer('st_point', spark, sql)
     calculate_with_timmer('st_point', spark, sql)
     calculate_with_timmer('st_point', spark, sql)
@@ -127,7 +127,7 @@ def run_st_geomfromgeojson(spark):
     file_path = os.path.join(data_path, 'st_geomfromgeojson.csv')
     json_df = spark.read.csv(file_path, schema="json string").cache()
     json_df.createOrReplaceTempView("json")
-    sql = "select ST_AsText(ST_GeomFromGeoJSON(json)) from json"
+    sql = "select ST_GeomFromGeoJSON(json) from json"
     calculate_with_timmer('st_geomfromgeojson', spark, sql)
     calculate_with_timmer('st_geomfromgeojson', spark, sql)
     calculate_with_timmer('st_geomfromgeojson', spark, sql)
@@ -139,7 +139,7 @@ def run_st_pointfromtext(spark):
     file_path = os.path.join(data_path, 'st_pointfromtext.csv')
     data_df = spark.read.csv(file_path, schema="data string").cache()
     data_df.createOrReplaceTempView("data")
-    sql = "select ST_AsText(ST_PointFromText(data)) from data"
+    sql = "select ST_PointFromText(data) from data"
     calculate_with_timmer('st_pointfromtext', spark, sql)
     calculate_with_timmer('st_pointfromtext', spark, sql)
     calculate_with_timmer('st_pointfromtext', spark, sql)
@@ -151,7 +151,7 @@ def run_st_polygonfromtext(spark):
     file_path = os.path.join(data_path, 'st_polygonfromtext.csv')
     data_df = spark.read.csv(file_path, schema="data string").cache()
     data_df.createOrReplaceTempView("data")
-    sql = "select ST_AsText(ST_PolygonFromText(data)) from data"
+    sql = "select ST_PolygonFromText(data) from data"
     calculate_with_timmer('st_polygonfromtext', spark, sql)
     calculate_with_timmer('st_polygonfromtext', spark, sql)
     calculate_with_timmer('st_polygonfromtext', spark, sql)
@@ -163,7 +163,7 @@ def run_st_astext(spark):
     file_path = os.path.join(data_path, 'st_astext.csv')
     data_df = spark.read.csv(file_path, schema="data string").cache()
     data_df.createOrReplaceTempView("data")
-    sql = "select ST_AsText(ST_PolygonFromText(data)) from data"
+    sql = "select ST_PolygonFromText(data) from data"
     calculate_with_timmer('st_astext', spark, sql)
     calculate_with_timmer('st_astext', spark, sql)
     calculate_with_timmer('st_astext', spark, sql)
@@ -175,7 +175,7 @@ def run_st_precision_reduce(spark):
     file_path = os.path.join(data_path, 'st_precision_reduce.csv')
     precision_reduce_df = spark.read.csv(file_path, schema="geos string").cache()
     precision_reduce_df.createOrReplaceTempView("precision_reduce")
-    sql = "select ST_AsText(ST_PrecisionReduce(ST_GeomFromText(geos), 4)) from precision_reduce"
+    sql = "select ST_PrecisionReduce(ST_GeomFromText(geos), 4) from precision_reduce"
     calculate_with_timmer('st_precision_reduce', spark, sql)
     calculate_with_timmer('st_precision_reduce', spark, sql)
     calculate_with_timmer('st_precision_reduce', spark, sql)
@@ -187,7 +187,7 @@ def run_st_linestringfromtext(spark):
     file_path = os.path.join(data_path, 'st_linestringfromtext.csv')
     data_df = spark.read.csv(file_path, schema="data string").cache()
     data_df.createOrReplaceTempView("data")
-    sql = "select ST_AsText(ST_LineStringFromText(data)) from data"
+    sql = "select ST_LineStringFromText(data) from data"
     calculate_with_timmer('st_linestringfromtext', spark, sql)
     calculate_with_timmer('st_linestringfromtext', spark, sql)
     calculate_with_timmer('st_linestringfromtext', spark, sql)
@@ -199,7 +199,7 @@ def run_st_geomfromwkt(spark):
     file_path = os.path.join(data_path, 'st_geomfromwkt.csv')
     data_df = spark.read.csv(file_path, schema="data string").cache()
     data_df.createOrReplaceTempView("data")
-    sql = "select ST_AsText(ST_GeomFromWKT(data)) from data"
+    sql = "select ST_GeomFromWKT(data) from data"
     calculate_with_timmer('st_geomfromwkt', spark, sql)
     calculate_with_timmer('st_geomfromwkt', spark, sql)
     calculate_with_timmer('st_geomfromwkt', spark, sql)
@@ -211,7 +211,7 @@ def run_st_geomfromtext(spark):
     file_path = os.path.join(data_path, 'st_geomfromtext.csv')
     data_df = spark.read.csv(file_path, schema="data string").cache()
     data_df.createOrReplaceTempView("data")
-    sql = "select ST_AsText(ST_GeomFromText(data)) from data"
+    sql = "select ST_GeomFromText(data) from data"
     calculate_with_timmer('st_geomfromtext', spark, sql)
     calculate_with_timmer('st_geomfromtext', spark, sql)
     calculate_with_timmer('st_geomfromtext', spark, sql)
@@ -223,7 +223,7 @@ def run_st_intersection(spark):
     file_path = os.path.join(data_path, 'st_intersection.csv')
     intersection_df = spark.read.csv(file_path, schema="left string, right string").cache()
     intersection_df.createOrReplaceTempView("intersection")
-    sql = "select ST_AsText(ST_Intersection(ST_GeomFromText(left), ST_GeomFromText(right))) from intersection"
+    sql = "select ST_Intersection(ST_GeomFromText(left), ST_GeomFromText(right)) from intersection"
     calculate_with_timmer('st_intersection', spark, sql)
     calculate_with_timmer('st_intersection', spark, sql)
     calculate_with_timmer('st_intersection', spark, sql)
@@ -319,7 +319,7 @@ def run_st_make_valid(spark):
     file_path = os.path.join(data_path, 'st_make_valid.csv')
     make_valid_df = spark.read.csv(file_path, schema='geos string').cache()
     make_valid_df.createOrReplaceTempView("make_valid")
-    sql = "select ST_AsText(ST_MakeValid(ST_GeomFromText(geos))) from make_valid"
+    sql = "select ST_MakeValid(ST_GeomFromText(geos)) from make_valid"
     calculate_with_timmer('st_make_valid', spark, sql)
     calculate_with_timmer('st_make_valid', spark, sql)
     calculate_with_timmer('st_make_valid', spark, sql)
@@ -331,7 +331,7 @@ def run_st_simplify_preserve_topology(spark):
     file_path = os.path.join(data_path, 'st_simplify_preserve_topology.csv')
     simplify_preserve_topology_df = spark.read.csv(file_path, schema='geos string').cache()
     simplify_preserve_topology_df.createOrReplaceTempView("simplify_preserve_topology")
-    sql = "select ST_AsText(ST_SimplifyPreserveTopology(ST_GeomFromText(geos), 10)) from simplify_preserve_topology"
+    sql = "select ST_SimplifyPreserveTopology(ST_GeomFromText(geos), 10) from simplify_preserve_topology"
     calculate_with_timmer('st_simplify_preserve_topology', spark, sql)
     calculate_with_timmer('st_simplify_preserve_topology', spark, sql)
     calculate_with_timmer('st_simplify_preserve_topology', spark, sql)
@@ -342,9 +342,9 @@ def run_st_simplify_preserve_topology(spark):
 def run_st_polygon_from_envelope(spark):
     file_path = os.path.join(data_path, 'st_polygon_from_envelope.csv')
     polygon_from_envelope_df = spark.read.csv(file_path,
-                                              schema="min_x string, min_y string, max_x string, max_y string").cache()
+                                              schema="min_x double, min_y double, max_x double, max_y double").cache()
     polygon_from_envelope_df.createOrReplaceTempView('polygon_from_envelope')
-    sql = "select ST_AsText(ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y)) from polygon_from_envelope"
+    sql = "select ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y) from polygon_from_envelope"
     calculate_with_timmer('st_polygon_from_envelope', spark, sql)
     calculate_with_timmer('st_polygon_from_envelope', spark, sql)
     calculate_with_timmer('st_polygon_from_envelope', spark, sql)
@@ -416,7 +416,7 @@ def run_st_centroid(spark):
     file_path = os.path.join(data_path, 'st_centroid.csv')
     centroid_df = spark.read.csv(file_path, schema='geos string').cache()
     centroid_df.createOrReplaceTempView("centroid")
-    sql = "select ST_AsText(ST_Centroid(ST_GeomFromText(geos))) from centroid"
+    sql = "select ST_Centroid(ST_GeomFromText(geos)) from centroid"
     calculate_with_timmer('st_centroid', spark, sql)
     calculate_with_timmer('st_centroid', spark, sql)
     calculate_with_timmer('st_centroid', spark, sql)
@@ -452,7 +452,7 @@ def run_st_convexhull(spark):
     file_path = os.path.join(data_path, 'st_convexhull.csv')
     convexhull_df = spark.read.csv(file_path, schema='geos string').cache()
     convexhull_df.createOrReplaceTempView("convexhull")
-    sql = "select ST_AsText(ST_convexhull(ST_GeomFromText(geos))) from convexhull"
+    sql = "select ST_convexhull(ST_GeomFromText(geos)) from convexhull"
     calculate_with_timmer('st_convexhull', spark, sql)
     calculate_with_timmer('st_convexhull', spark, sql)
     calculate_with_timmer('st_convexhull', spark, sql)
@@ -476,7 +476,7 @@ def run_st_envelope(spark):
     file_path = os.path.join(data_path, 'st_envelope.csv')
     envelope_df = spark.read.csv(file_path, schema='geos string').cache()
     envelope_df.createOrReplaceTempView("envelope")
-    sql = "select ST_AsText(ST_Envelope(ST_GeomFromText(geos))) from envelope"
+    sql = "select ST_Envelope(ST_GeomFromText(geos)) from envelope"
     calculate_with_timmer('st_envelope', spark, sql)
     calculate_with_timmer('st_envelope', spark, sql)
     calculate_with_timmer('st_envelope', spark, sql)
@@ -488,7 +488,7 @@ def run_st_buffer(spark):
     file_path = os.path.join(data_path, 'st_buffer.csv')
     buffer_df = spark.read.csv(file_path, schema='geos string').cache()
     buffer_df.createOrReplaceTempView("buffer")
-    sql = "select ST_AsText(ST_Buffer(ST_GeomFromText(geos), 1.2)) from buffer"
+    sql = "select ST_Buffer(ST_GeomFromText(geos), 1.2) from buffer"
     calculate_with_timmer('st_buffer', spark, sql)
     calculate_with_timmer('st_buffer', spark, sql)
     calculate_with_timmer('st_buffer', spark, sql)
@@ -524,7 +524,7 @@ def run_st_transform(spark):
     file_path = os.path.join(data_path, 'st_transform.csv')
     buffer_df = spark.read.csv(file_path, schema='geos string').cache()
     buffer_df.createOrReplaceTempView("buffer")
-    sql = "select ST_AsText(ST_Transform(ST_GeomFromText(geos), 'epsg:4326', 'epsg:3857')) from buffer"
+    sql = "select ST_Transform(ST_GeomFromText(geos), 'epsg:4326', 'epsg:3857') from buffer"
     calculate_with_timmer('st_transform', spark, sql)
     calculate_with_timmer('st_transform', spark, sql)
     calculate_with_timmer('st_transform', spark, sql)
@@ -536,7 +536,7 @@ def run_st_curvetoline(spark):
     file_path = os.path.join(data_path, 'st_pointfromtext.csv')
     buffer_df = spark.read.csv(file_path, schema='geos string').cache()
     buffer_df.createOrReplaceTempView("buffer")
-    sql = "select ST_AsText(ST_CurveToLine(ST_GeomFromText(geos))) from buffer"
+    sql = "select ST_CurveToLine(ST_GeomFromText(geos)) from buffer"
     calculate_with_timmer('st_pointfromtext', spark, sql)
     calculate_with_timmer('st_pointfromtext', spark, sql)
     calculate_with_timmer('st_pointfromtext', spark, sql)
