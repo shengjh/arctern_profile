@@ -163,7 +163,7 @@ def run_st_astext(spark):
     file_path = os.path.join(data_path, 'st_astext.csv')
     data_df = spark.read.csv(file_path, schema="data string").cache()
     data_df.createOrReplaceTempView("data")
-    sql = "select ST_PolygonFromText(data) from data"
+    sql = "select ST_AsText(data) from data"
     calculate_with_timmer('st_astext', spark, sql)
     calculate_with_timmer('st_astext', spark, sql)
     calculate_with_timmer('st_astext', spark, sql)
@@ -500,7 +500,7 @@ def run_st_union_aggr(spark):
     file_path = os.path.join(data_path, 'st_union_aggr.csv')
     union_aggr_df1 = spark.read.csv(file_path, schema='geos string').cache()
     union_aggr_df1.createOrReplaceTempView("union_aggr1")
-    sql = "select ST_GeomFromText(geos) as geos from union_aggr1"
+    sql = "select ST_Union_Aggr(geos) as geos from union_aggr1"
     calculate_union_agg_with_timmer('st_union_aggr', spark, sql)
     calculate_union_agg_with_timmer('st_union_aggr', spark, sql)
     calculate_union_agg_with_timmer('st_union_aggr', spark, sql)
@@ -533,13 +533,13 @@ def run_st_transform(spark):
 
 @test_log
 def run_st_curvetoline(spark):
-    file_path = os.path.join(data_path, 'st_pointfromtext.csv')
+    file_path = os.path.join(data_path, 'st_curvetoline.csv')
     buffer_df = spark.read.csv(file_path, schema='geos string').cache()
     buffer_df.createOrReplaceTempView("buffer")
     sql = "select ST_CurveToLine(ST_GeomFromText(geos)) from buffer"
-    calculate_with_timmer('st_pointfromtext', spark, sql)
-    calculate_with_timmer('st_pointfromtext', spark, sql)
-    calculate_with_timmer('st_pointfromtext', spark, sql)
+    calculate_with_timmer('st_curvetoline', spark, sql)
+    calculate_with_timmer('st_curvetoline', spark, sql)
+    calculate_with_timmer('st_curvetoline', spark, sql)
     buffer_df.unpersist(blocking=True)
 
 
