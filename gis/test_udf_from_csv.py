@@ -15,7 +15,7 @@
 import os
 import sys
 import time
-import hdfs
+import pyarrow as pa
 
 from arctern_pyspark import register_funcs, union_aggr, envelope_aggr
 from pyspark.sql import SparkSession
@@ -27,8 +27,8 @@ data_path = ""
 output_path = ""
 test_name = []
 hdfs_url = ""
-client_hdfs = None
 to_hdfs = False
+fs = None
 
 
 def is_hdfs(path):
@@ -49,10 +49,7 @@ def timmer(fun1):
         dur = stop_time - start_time
         report_file_path = os.path.join(output_path, args[0] + '.txt')
         if to_hdfs:
-            append = False
-            if client_hdfs.status(report_file_path, strict=False):
-                append = True
-            with client_hdfs.write(report_file_path, append=append) as f:
+            with fs.open(report_file_path, "w") as f:
                 f.write(str.encode(args[0] + " "))
                 f.write(str.encode(str(dur) + "\n"))
         else:
@@ -577,11 +574,8 @@ def parse_args(argv):
 if __name__ == "__main__":
     parse_args(sys.argv[1:])
     if to_hdfs:
-        client_hdfs = hdfs.InsecureClient(hdfs_url)
-        client_hdfs.makedirs(output_path)
-        # create report file in hdfs
-        # with client_hdfs.write(report_file_path, overwrite=True) as f:
-        #     pass
+        url, port = hdfs_url.split(':')
+        fs = pa.hdfs.connect(url, int(port))
     else:
         os.makedirs(output_path, exist_ok=True)
 
