@@ -566,7 +566,7 @@ def parse_args(argv):
     if is_hdfs(output_path):
         global hdfs_url
         output_path = remove_prefix(output_path, "hdfs://")
-        hdfs_url = "http://" + output_path.split("/", 1)[0]
+        hdfs_url = output_path.split("/", 1)[0]
         output_path = output_path[output_path.find('/'):]
     # report_file_path = os.path.join(output_path, time.strftime("%Y-%m-%d-", time.localtime()) + 'report.txt')
 
