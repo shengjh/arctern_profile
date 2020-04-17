@@ -521,6 +521,17 @@ def run_st_union_aggr(spark):
 
 
 @test_log
+def run_st_union_aggr_1(spark):
+    file_path = os.path.join(data_path, 'st_union_aggr.csv')
+    union_aggr_df1 = spark.read.csv(file_path, delimiter='|', schema='geos string').cache()
+    union_aggr_df1.createOrReplaceTempView("union_aggr1")
+    sql = "select ST_GeomFromText(geos) as geos from union_aggr1"
+    for i in range(103):
+        calculate_union_agg_with_timmer('st_union_aggr_1', spark, sql)
+    union_aggr_df1.unpersist(blocking=True)
+
+
+@test_log
 def run_st_envelope_aggr(spark):
     file_path = os.path.join(data_path, 'st_envelope_aggr.csv')
     envelope_aggr_df = spark.read.csv(file_path, schema='geos string')
@@ -631,6 +642,7 @@ if __name__ == "__main__":
         'st_envelope': run_st_envelope,
         'st_buffer': run_st_buffer,
         'st_union_aggr': run_st_union_aggr,
+        'st_union_aggr_1': run_st_union_aggr_1,
         'st_envelope_aggr': run_st_envelope_aggr,
         'st_transform': run_st_transform,
         'st_curvetoline': run_st_curvetoline,
