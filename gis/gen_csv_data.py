@@ -103,7 +103,7 @@ def OneColDecorator(f=None, line=''):
 
 class _TwoColDecorator(_OneColDecorator):
     def __init__(self, f, left, right):
-        self._line = str(left) + ',' + str(right)
+        self._line = str(left) + '|' + str(right)
         self._file_name = f.__name__[4:] + '.csv'
 
 
@@ -174,7 +174,7 @@ def gen_st_simplify_preserve_topology():
 
 
 @OneColDecorator(
-    line='1.0,3.0,5.0,7.0'
+    line='1.0|3.3|5.1|7.0'
 )
 def gen_st_polygon_from_envelope():
     pass
@@ -195,21 +195,21 @@ def gen_st_intersects():
 
 
 @TwoColDecorator(
-    left='POLYGON((2 2, 7 2, 7 5, 2 5, 2 2))', right='POLYGON((1 1, 8 1, 8 7, 1 7, 1 1))'
+    left='POINT (1 8)', right='POLYGON ((0 0,0 4,2 2,4 4,4 0,0 0))'
 )
 def gen_st_within():
     pass
 
 
 @TwoColDecorator(
-    left='POLYGON((-1 -1,2 2,0 1,-1 -1))', right='POLYGON((5 2,7 4,5 5,5 2))'
+    left='POINT(-10 55)', right='POINT(-10 40)'
 )
 def gen_st_distance():
     pass
 
 
-@TwoColDecorator(
-    left='POLYGON((10 20,10 30,20 30,30 10))', right='POLYGON((10 20,10 40,30 40,40 10))'
+@OneColDecorator(
+    line='MULTIPOLYGON (((1 1,1 2,2 2,2 1,1 1)),((0 0,1 -1,1 1,-2 3,0 0)))'
 )
 def gen_st_area():
     pass
@@ -220,7 +220,7 @@ def gen_st_centroid():
     pass
 
 
-@OneColDecorator(line='LINESTRING(-72.1260 42.45, -72.1240 42.45666, -72.123 42.1546)')
+@OneColDecorator(line='LINESTRING(-72.12 42.45, -72.12 42.45, -72.12 42.15)')
 def gen_st_length():
     pass
 
@@ -242,7 +242,7 @@ def gen_st_npoints():
     pass
 
 
-@OneColDecorator(line='multipolygon (((0 0, 10 0, 10 10, 0 10, 0 0), (11 11, 20 11, 20 20, 20 11, 11 11)))')
+@OneColDecorator(line='POLYGON ((0 0,0 4,2 2,4 4,4 0,0 0))')
 def gen_st_envelope():
     pass
 
@@ -341,7 +341,7 @@ funcs = {
     'st_polygonfromtext': gen_st_polygonfromtext,
     'st_linestringfromtext': gen_st_linestringfromtext,
     'st_geomfromwkt': gen_st_geomfromwkt,
-    'st_geomfromtext': gen_st_geomfromtext,
+    # 'st_geomfromtext': gen_st_geomfromtext,
     'st_astext': gen_st_astext,
 }
 
