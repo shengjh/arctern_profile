@@ -60,7 +60,7 @@ def timmer(fun1):
     return wrapper
 
 
-@timmer
+# @timmer
 def calculate_with_timmer(func_name, spark, sql):
     df = spark.sql(sql)
     df.createOrReplaceTempView("df")
@@ -112,9 +112,12 @@ def run_st_point(spark):
     points_df = spark.read.csv(file_path, schema='x double, y double').cache()
     points_df.createOrReplaceTempView("points")
     sql = "select ST_Point(x, y) from points"
+    s = time.time()
     calculate_with_timmer('st_point', spark, sql)
     calculate_with_timmer('st_point', spark, sql)
     calculate_with_timmer('st_point', spark, sql)
+    e = time.time()
+    print("st_point time:", e - s)
     points_df.unpersist(blocking=True)
 
 
@@ -124,10 +127,11 @@ def run_st_point_1(spark):
     points_df = spark.read.csv(file_path, schema='x double, y double').cache()
     points_df.createOrReplaceTempView("points")
     sql = "select ST_Point(x, y) from points"
+    s = time.time()
     for i in range(100):
-        calculate_with_timmer('st_point', spark, sql)
-    # calculate_with_timmer('st_point', spark, sql)
-    # calculate_with_timmer('st_point', spark, sql)
+        calculate_with_timmer('st_point_1', spark, sql)
+    e = time.time()
+    print("st_point_1 time:", e - s)
     points_df.unpersist(blocking=True)
 
 
