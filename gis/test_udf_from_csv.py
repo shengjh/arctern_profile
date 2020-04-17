@@ -511,7 +511,7 @@ def run_st_buffer(spark):
 @test_log
 def run_st_union_aggr(spark):
     file_path = os.path.join(data_path, 'st_union_aggr.csv')
-    union_aggr_df1 = spark.read.csv(file_path, delimiter='|', schema='geos string').cache()
+    union_aggr_df1 = spark.read.csv(file_path, sep="|", schema='geos string').cache()
     union_aggr_df1.createOrReplaceTempView("union_aggr1")
     sql = "select ST_GeomFromText(geos) as geos from union_aggr1"
     calculate_union_agg_with_timmer('st_union_aggr', spark, sql)
