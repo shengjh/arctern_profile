@@ -103,7 +103,7 @@ def OneColDecorator(f=None, line=''):
 
 class _TwoColDecorator(_OneColDecorator):
     def __init__(self, f, left, right):
-        self._line = str(left) + ',' + str(right)
+        self._line = str(left) + '|' + str(right)
         self._file_name = f.__name__[4:] + '.csv'
 
 
