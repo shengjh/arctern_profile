@@ -119,6 +119,19 @@ def run_st_point(spark):
 
 
 @test_log
+def run_st_point_1(spark):
+    file_path = os.path.join(data_path, 'st_point.csv')
+    points_df = spark.read.csv(file_path, schema='x double, y double').cache()
+    points_df.createOrReplaceTempView("points")
+    sql = "select ST_Point(x, y) from points"
+    for i in range(100):
+        calculate_with_timmer('st_point', spark, sql)
+    # calculate_with_timmer('st_point', spark, sql)
+    # calculate_with_timmer('st_point', spark, sql)
+    points_df.unpersist(blocking=True)
+
+
+@test_log
 def run_st_geomfromgeojson(spark):
     file_path = os.path.join(data_path, 'st_geomfromgeojson.csv')
     json_df = spark.read.csv(file_path, schema="json string").cache()
@@ -589,6 +602,7 @@ if __name__ == "__main__":
 
     funcs = {
         'st_point': run_st_point,
+        'st_point_1': run_st_point_1,
         'st_intersection': run_st_intersection,
         'st_isvalid': run_st_isvalid,
         'st_equals': run_st_equals,
