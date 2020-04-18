@@ -99,9 +99,14 @@ def calculate_envelope_agg(spark, sql):
 
 def test_log(f):
     def wrapper(*args, **kwargs):
-        print("--------Start test", f.__name__ + "--------")
+        s = time.time()
+        # print("--------Start test", f.__name__ + "--------")
         f(*args, **kwargs)
-        print("--------Finish test", f.__name__ + "--------")
+        e = time.time()
+        print('-' * 50)
+        print(f.__name__, 'cost time: ', e - s)
+        print('=' * 50)
+        # print("--------Finish test", f.__name__ + "--------")
 
     return wrapper
 
@@ -112,12 +117,8 @@ def run_st_point(spark):
     points_df = spark.read.csv(file_path, schema='x double, y double').cache()
     points_df.createOrReplaceTempView("points")
     sql = "select ST_Point(x, y) from points"
-    s = time.time()
-    calculate_with_timmer('st_point', spark, sql)
-    calculate_with_timmer('st_point', spark, sql)
-    calculate_with_timmer('st_point', spark, sql)
-    e = time.time()
-    print("st_point time:", e - s)
+    for i in range(6):
+        calculate(spark, sql)
     points_df.unpersist(blocking=True)
 
 
@@ -127,11 +128,8 @@ def run_st_point_1(spark):
     points_df = spark.read.csv(file_path, schema='x double, y double').cache()
     points_df.createOrReplaceTempView("points")
     sql = "select ST_Point(x, y) from points"
-    s = time.time()
-    for i in range(100):
-        calculate_with_timmer('st_point_1', spark, sql)
-    e = time.time()
-    print("st_point_1 time:", e - s)
+    for i in range(106):
+        calculate(spark, sql)
     points_df.unpersist(blocking=True)
 
 
@@ -514,9 +512,11 @@ def run_st_union_aggr(spark):
     union_aggr_df1 = spark.read.csv(file_path, sep="|", schema='geos string').cache()
     union_aggr_df1.createOrReplaceTempView("union_aggr1")
     sql = "select ST_GeomFromText(geos) as geos from union_aggr1"
-    calculate_union_agg_with_timmer('st_union_aggr', spark, sql)
-    calculate_union_agg_with_timmer('st_union_aggr', spark, sql)
-    calculate_union_agg_with_timmer('st_union_aggr', spark, sql)
+    # calculate_union_agg_with_timmer('st_union_aggr', spark, sql)
+    # calculate_union_agg_with_timmer('st_union_aggr', spark, sql)
+    # calculate_union_agg_with_timmer('st_union_aggr', spark, sql)
+    for i in range(6):
+        calculate_union_agg(spark, sql)
     union_aggr_df1.unpersist(blocking=True)
 
 
@@ -526,8 +526,8 @@ def run_st_union_aggr_1(spark):
     union_aggr_df1 = spark.read.csv(file_path, sep="|", schema='geos string').cache()
     union_aggr_df1.createOrReplaceTempView("union_aggr1")
     sql = "select ST_GeomFromText(geos) as geos from union_aggr1"
-    for i in range(103):
-        calculate_union_agg_with_timmer('st_union_aggr_1', spark, sql)
+    for i in range(106):
+        calculate_union_agg(spark, sql)
     union_aggr_df1.unpersist(blocking=True)
 
 
