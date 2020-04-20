@@ -201,8 +201,8 @@ const std::vector<std::string> st_polygon_from_envelope_pool = {
 const std::vector<std::string> st_within_pool = {
         "POINT(0 2)|POLYGON((0 6,6 8,8 4,6 0,2 0,0 2,0 6))",
         "POINT(-2 2)|POLYGON((0 6,6 8,8 4,6 0,2 0,0 2,0 6))",
-        "POINT(4 4)|(POLYGON((0 6,6 8,8 4,6 0,2 0,0 2,0 6))",
-        "POINT(4.2, 2.1)|POLYGON((0 6,6 8,8 4,6 0,2 0,0 2,0 6))",
+        "POINT(4 4)|POLYGON((0 6,6 8,8 4,6 0,2 0,0 2,0 6))",
+        "POINT(4.2 2.1)|POLYGON((0 6,6 8,8 4,6 0,2 0,0 2,0 6))",
         "POINT(10 1)|POLYGON((0 6,6 8,8 4,6 0,2 0,0 2,0 6))",
 
 };
