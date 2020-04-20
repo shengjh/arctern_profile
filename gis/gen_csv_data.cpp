@@ -94,22 +94,22 @@ const std::vector<std::string> single_point_pool = {
         "POINT (1 22)",
         "POINT (1.64 2)",
         "POINT (1 2.2)",
-        "POINT (11321 231123)",
+        "POINT (-121 33.5)",
         "POINT (1.0 2.98760)",
         "POINT (0.987 0.65)",
         "POINT (-0.987 -0.765)",
         "POINT (-1 2)",
-        "POINT (1132321 23123123)",
+        "POINT (180 90)",
         "POINT (1.64 2)",
         "POINT (1 2.2)",
         "POINT (1.0 2.98760)",
         "POINT (0.987 0.65)",
         "POINT (-0.987 -0.765)",
         "POINT (1 2.22)",
-        "POINT (113232.1 23.123123)",
+        "POINT (-180 -90)",
         "POINT (1.64 2.876)",
         "POINT (1 2.208)",
-        "POINT (1131.326412 23123.2327)",
+        "POINT (-77.1234124 23.2327)",
 
 };
 const std::vector<std::string> st_curvetoline_pool = {
@@ -255,7 +255,10 @@ static void write_data(const std::string &path, const std::string &pattern_name,
     batch.reserve(batch_size * 15);
     while (has_remain) {
         batch.clear();
-        for (int j = 0; j < batch_size; ++j) {
+        for (int j = 0; j < pool.size(); ++j){
+            batch.append(pool[j]+'\n');
+        }
+        for (int j = 0; j < batch_size - pool.size(); ++j) {
             auto i = random() % pool.size();
             batch.append(pool[i] + '\n');
         }
