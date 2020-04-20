@@ -137,11 +137,11 @@ const std::vector<std::string> st_distance_pool = {
 };
 const std::vector<std::string> st_geomfromgeojson_pool = {
         "{'type':'Polygon','coordinates':[[[0,0],[0,1],[1,1],[1,0],[0,0]]]}",
-        "{'TYPE':'POINT','COORDINATES':[125.6, 10.1]}",
-        "{'COORDINATES': [[1.0, 1.0], [3.0, 4.0]], 'TYPE': 'MULTIPOINT'}",
-        "{'COORDINATES': [[1.0, 1.0], [1.0, 2.0], [2.0, 3.0]], 'TYPE': 'LINESTRING'}",
-        "{'COORDINATES': [[[0.0, 0.0], [0.0, 4.0], [4.0, 4.0], [0.0, 0.0]]], 'TYPE': 'POLYGON'}",
-        "{'COORDINATES': [[[[0.0, 0.0], [1.0, -1.0], [1.0, 1.0], [-2.0, 3.0], [0.0, 0.0]]]], 'TYPE': 'MULTIPOLYGON'}",
+        "{'type':'Point','coordinates':[125.6, 10.1]}",
+        "{'coordinates': [[1.0, 1.0], [3.0, 4.0]], 'type': 'Multipolygon'}",
+        "{'coordinates': [[1.0, 1.0], [1.0, 2.0], [2.0, 3.0]], 'type': 'Linestring'}",
+        "{'coordinates': [[[0.0, 0.0], [0.0, 4.0], [4.0, 4.0], [0.0, 0.0]]], 'type': 'Polygon'}",
+        "{'coordinates': [[[[0.0, 0.0], [1.0, -1.0], [1.0, 1.0], [-2.0, 3.0], [0.0, 0.0]]]], 'type': 'Multipolygon'}",
 
 };
 
