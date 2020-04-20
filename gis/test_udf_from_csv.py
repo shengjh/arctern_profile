@@ -27,11 +27,246 @@ test_name = []
 hdfs_url = ""
 to_hdfs = False
 fs = None
+show_df = False
+exec_times = 6
 
+maps = {
+
+        'st_area': (
+            'single_polygon',  #file_name
+            'geos string', #schema
+            "select ST_Area(ST_GeomFromText(geos)) from %s", #sql
+            ),
+
+        'st_astext': (
+            'single_polygon', 
+            'geos string', 
+            "select ST_AsText(ST_PolygonFromText(geos)) from %s",
+            ),
+
+        'st_envelope_aggr': (
+            'single_polygon', 
+            'geos string', 
+            "select ST_GeomFromText(geos) as geos from %s",
+            ),
+
+        'st_envelope': (
+            'single_polygon', 
+            'geos string', 
+            #"select ST_Envelope(ST_GeomFromText(geos)) from %s",
+            "select ST_AsText(ST_Envelope(ST_GeomFromText(geos))) from %s",
+            ),
+
+        'st_geomfromwkt': (
+            'single_polygon',
+            'geos string', 
+            #"select ST_GeomFromWKT(geos) from %s",
+            "select ST_AsText(ST_GeomFromWKT(geos)) from %s",
+            ),
+
+        'st_union_aggr': (
+            'single_polygon',
+            'geos string', 
+            "select ST_GeomFromText(geos) as geos from %s",
+            ),
+
+        'st_issimple': (
+            'single_polygon',
+            'geos string', 
+            "select ST_IsSimple(ST_GeomFromText(geos)) from %s",
+            ),
+
+        'st_polygonfromtext': (
+            'single_polygon',
+            'geos string', 
+            #"select ST_PolygonFromText(geos) from %s",
+            "select ST_AsText(ST_PolygonFromText(geos)) from %s",
+            ),
+
+        'st_pointfromtext': (
+            'single_point',
+            'geos string', 
+            #"select ST_PointFromText(geos) from %s",
+            "select ST_AsText(ST_PointFromText(geos)) from %s",
+            ),
+
+        'st_transform': (
+            'single_point',
+            'geos string', 
+            #"select ST_Transform(ST_GeomFromText(geos), 'epsg:4326', 'epsg:3857') from %s",
+            "select ST_AsText(ST_Transform(ST_GeomFromText(geos), 'epsg:4326', 'epsg:3857')) from %s",
+            ),
+
+        'st_buffer': (
+            'single_point',
+            'geos string', 
+            #"select ST_Buffer(ST_GeomFromText(geos), 1.2) from %s",
+            "select ST_AsText(ST_Buffer(ST_GeomFromText(geos), 1.2)) from %s",
+            ),
+
+        'st_length': (
+            'single_linestring',
+            'geos string', 
+            "select ST_Length(ST_GeomFromText(geos)) from %s",
+            ),
+
+        'st_linestringfromtext': (
+            'single_lingstring',
+            'geos string', 
+            #"select ST_LineStringFromText(geos) from %s",
+            "select ST_AsText(ST_LineStringFromText(geos)) from %s",
+            ),
+
+        'st_isvalid': (
+            'single_col',
+            'geos string', 
+            "select ST_IsValid(ST_GeomFromText(geos)) from %s",
+            ),
+
+        'st_npoints': (
+            'single_col',
+            'geos string', 
+            "select ST_NPoints(ST_GeomFromText(geos)) from %s",
+        ),
+
+        'st_centroid': (
+            'single_col',
+            'geos string', 
+            #"select ST_Centroid(ST_GeomFromText(geos)) from %s",
+            "select ST_AsText(ST_Centroid(ST_GeomFromText(geos))) from %s",
+        ),
+
+        'st_convexhull': (
+            'single_col',
+            'geos string', 
+            #"select ST_convexhull(ST_GeomFromText(geos)) from %s",
+            "select ST_AsText(ST_convexhull(ST_GeomFromText(geos))) from %s",
+        ),
+
+        'st_geometry_type': (
+            'single_col',
+            'geos string', 
+            "select ST_GeometryType(ST_GeomFromText(geos)) from %s",
+        ),
+
+        'st_simplify_preserve_topology': (
+            'single_col',
+            'geos string', 
+            #"select ST_SimplifyPreserveTopology(ST_GeomFromText(geos), 10) from %s",
+            "select ST_AsText(ST_SimplifyPreserveTopology(ST_GeomFromText(geos), 10)) from %s",
+        ),
+
+        'st_make_valid': (
+            'single_col',
+            'geos string', 
+            #"select ST_MakeValid(ST_GeomFromText(geos)) from %s",
+            "select ST_AsText(ST_MakeValid(ST_GeomFromText(geos))) from %s",
+        ),
+
+        'st_intersection': (
+            'double_col',
+            "left string, right string",
+            #"select ST_Intersection(ST_GeomFromText(left), ST_GeomFromText(right)) from %s",
+            "select ST_AsText(ST_Intersection(ST_GeomFromText(left), ST_GeomFromText(right))) from %s",
+        ),
+
+
+        'st_intersects': (
+            'double_col',
+            "left string, right string",
+            "select ST_Intersects(ST_GeomFromText(left), ST_GeomFromText(right)) from %s",
+        ),
+
+        'st_overlaps': (
+            'double_col',
+            "left string, right string",
+            "select ST_Overlaps(ST_GeomFromText(left), ST_GeomFromText(right)) from %s",
+        ),
+
+        'st_contains': (
+            'double_col',
+            "left string, right string",
+            "select ST_Contains(ST_GeomFromText(left), ST_GeomFromText(right)) from %s",
+        ),
+
+        'st_equals': (
+            'double_col',
+            "left string, right string",
+            "select ST_Equals(ST_GeomFromText(left), ST_GeomFromText(right)) from %s",
+        ),
+
+        'st_crosses': (
+            'double_col',
+            "left string, right string",
+            "select ST_Crosses(ST_GeomFromText(left), ST_GeomFromText(right)) from %s",
+        ),
+
+        'st_touches': (
+            'double_col',
+            "left string, right string",
+            "select ST_Touches(ST_GeomFromText(left), ST_GeomFromText(right)) from %s",
+        ),
+
+        'st_hausdorffdistance': (
+            'double_col',
+            "left string, right string",
+            "select ST_HausdorffDistance(ST_GeomFromText(left),ST_GeomFromText(right)) from %s",
+        ),
+
+        'st_distance': (
+            'st_distance',
+            "left string, right string",
+            "select ST_Distance(ST_GeomFromText(left), ST_GeomFromText(right)) from %s",
+        ),
+
+        'st_within': (
+            'st_within',
+            "left string, right string",
+            "select ST_Within(ST_GeomFromText(left), ST_GeomFromText(right)) from %s",
+        ),
+
+        'st_curvetoline': (
+            'st_curvetoline',
+            'geos string', 
+            #"select ST_CurveToLine(ST_GeomFromText(geos)) from %s",
+            "select ST_AsText(ST_CurveToLine(ST_GeomFromText(geos))) from %s",
+        ),
+
+        'st_point': (
+            'st_point',
+            'x double, y double',
+            "select ST_AsText(ST_Point(x, y)) from %s",
+        ),
+
+        'st_polygon_from_envelope': (
+            'st_polygon_from_envelope',
+            "min_x double, min_y double, max_x double, max_y double",
+            #"select ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y) from %s",
+            "select ST_AsText(ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y)) from %s",
+        ),
+
+        'st_geomfromgeojson': (
+            'st_geomfromgeojson',
+            'geos string', 
+            #"select ST_GeomFromGeoJSON(geos) from %s",
+            "select ST_AsText(ST_GeomFromGeoJSON(geos)) from %s",
+        ),
+
+}
+
+def get_file_path(file_name):
+    print("file_name", file_name)
+    file_path = os.path.join(data_path, file_name + ".csv")
+    if not file_name or not fs.exists(file_path): 
+        if file_name:
+            print("failed to load file %s"%file_name)
+        else:
+            print("filename is empty!")
+        return  ""
+    return file_path
 
 def is_hdfs(path):
     return path.startswith("hdfs://")
-
 
 def remove_prefix(text, prefix):
     if text.startswith(prefix):
@@ -45,66 +280,33 @@ def timmer(fun1):
         res = fun1(*args, **kwargs)
         stop_time = time.time()
         dur = stop_time - start_time
-        report_file_path = os.path.join(output_path, args[0] + '.txt')
+        file_name = kwargs['test_name']
+        report_file_path = os.path.join(output_path, file_name + '.txt')
         if to_hdfs:
             mode = "ab" if fs.exists(report_file_path) else "wb"
             with fs.open(report_file_path, mode) as f:
-                f.write((args[0] + " " + str(dur) + "\n").encode('utf-8'))
+                f.write((file_name + " " + str(dur) + "\n").encode('utf-8'))
         else:
             with open(report_file_path, 'a') as f:
-                f.write(args[0] + " " + str(dur) + "\n")
+                f.write(file_name + " " + str(dur) + "\n")
         return res
 
     return wrapper
 
 
 @timmer
-def calculate_with_timmer(func_name, spark, sql):
+def func_with_timmer(spark, sql, test_name=""):
     df = spark.sql(sql)
-    df.createOrReplaceTempView("df")
-    # print("function::k", func_name)
-    # df.show()
-    # print('-'*10)
-    spark.sql("CACHE TABLE df")
-    spark.sql("UNCACHE TABLE df")
+    res_name = "res_"+test_name
+    df.createOrReplaceTempView(res_name)
 
+    if show_df:
+        print("function:", test_name)
+        df.show()
+        print('-'*10)
 
-def calculate(spark, sql):
-    df = spark.sql(sql)
-    df.createOrReplaceTempView("df")
-    spark.sql("CACHE TABLE df")
-    spark.sql("UNCACHE TABLE df")
-
-
-@timmer
-def calculate_union_agg_with_timmer(func_name, spark, sql):
-    df = spark.sql(sql)
-    rdf = union_aggr(df, "geos")
-    # print("function::k", func_name)
-    # print(rdf)
-    # print('-'*10)
-
-
-def calculate_union_agg(spark, sql):
-    df = spark.sql(sql)
-    rdf = union_aggr(df, "geos")
-
-
-
-@timmer
-def calculate_envelope_agg_with_timmer(func_name, spark, sql):
-    df = spark.sql(sql)
-    rdf = envelope_aggr(df, "geos")
-    # print("function::k", func_name)
-    # print(rdf)
-    # print('-'*10)
-
-
-
-def calculate_envelope_agg(spark, sql):
-    df = spark.sql(sql)
-    rdf = envelope_aggr(df, "geos")
-
+    spark.sql("CACHE TABLE %s"%res_name)
+    spark.sql("UNCACHE TABLE %s"%res_name)
 
 def test_log(f):
     def wrapper(*args, **kwargs):
@@ -115,450 +317,70 @@ def test_log(f):
     return wrapper
 
 
-@test_log
-def run_st_point(spark):
-    file_path = os.path.join(data_path, 'st_point.csv')
-    points_df = spark.read.csv(file_path, sep='|', schema='x double, y double').cache()
-    points_df.createOrReplaceTempView("points")
-    sql = "select ST_Point(x, y) from points"
-    calculate_with_timmer('st_point', spark, sql)
-    calculate_with_timmer('st_point', spark, sql)
-    calculate_with_timmer('st_point', spark, sql)
-    points_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_geomfromgeojson(spark):
-    file_path = os.path.join(data_path, 'st_geomfromgeojson.csv')
-    json_df = spark.read.csv(file_path, sep='|', schema="json string").cache()
-    json_df.createOrReplaceTempView("json")
-    sql = "select ST_GeomFromGeoJSON(json) from json"
-    calculate_with_timmer('st_geomfromgeojson', spark, sql)
-    calculate_with_timmer('st_geomfromgeojson', spark, sql)
-    calculate_with_timmer('st_geomfromgeojson', spark, sql)
-    json_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_pointfromtext(spark):
-    file_path = os.path.join(data_path, 'st_pointfromtext.csv')
-    data_df = spark.read.csv(file_path, sep='|', schema="data string").cache()
-    data_df.createOrReplaceTempView("data")
-    sql = "select ST_PointFromText(data) from data"
-    calculate_with_timmer('st_pointfromtext', spark, sql)
-    calculate_with_timmer('st_pointfromtext', spark, sql)
-    calculate_with_timmer('st_pointfromtext', spark, sql)
-    data_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_polygonfromtext(spark):
-    file_path = os.path.join(data_path, 'st_polygonfromtext.csv')
-    data_df = spark.read.csv(file_path, sep='|', schema="data string").cache()
-    data_df.createOrReplaceTempView("data")
-    sql = "select ST_PolygonFromText(data) from data"
-    calculate_with_timmer('st_polygonfromtext', spark, sql)
-    calculate_with_timmer('st_polygonfromtext', spark, sql)
-    calculate_with_timmer('st_polygonfromtext', spark, sql)
-    data_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_astext(spark):
-    file_path = os.path.join(data_path, 'st_astext.csv')
-    data_df = spark.read.csv(file_path, sep='|', schema="data string").cache()
-    data_df.createOrReplaceTempView("data")
-    sql = "select ST_AsText(ST_PolygonFromText(data)) from data"
-    calculate_with_timmer('st_astext', spark, sql)
-    calculate_with_timmer('st_astext', spark, sql)
-    calculate_with_timmer('st_astext', spark, sql)
-    data_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_precision_reduce(spark):
-    file_path = os.path.join(data_path, 'st_precision_reduce.csv')
-    precision_reduce_df = spark.read.csv(file_path, sep='|', schema="geos string").cache()
-    precision_reduce_df.createOrReplaceTempView("precision_reduce")
-    sql = "select ST_PrecisionReduce(ST_GeomFromText(geos), 4) from precision_reduce"
-    calculate_with_timmer('st_precision_reduce', spark, sql)
-    calculate_with_timmer('st_precision_reduce', spark, sql)
-    calculate_with_timmer('st_precision_reduce', spark, sql)
-    precision_reduce_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_linestringfromtext(spark):
-    file_path = os.path.join(data_path, 'st_linestringfromtext.csv')
-    data_df = spark.read.csv(file_path, sep='|', schema="data string").cache()
-    data_df.createOrReplaceTempView("data")
-    sql = "select ST_LineStringFromText(data) from data"
-    calculate_with_timmer('st_linestringfromtext', spark, sql)
-    calculate_with_timmer('st_linestringfromtext', spark, sql)
-    calculate_with_timmer('st_linestringfromtext', spark, sql)
-    data_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_geomfromwkt(spark):
-    file_path = os.path.join(data_path, 'st_geomfromwkt.csv')
-    data_df = spark.read.csv(file_path, sep='|', schema="data string").cache()
-    data_df.createOrReplaceTempView("data")
-    sql = "select ST_GeomFromWKT(data) from data"
-    calculate_with_timmer('st_geomfromwkt', spark, sql)
-    calculate_with_timmer('st_geomfromwkt', spark, sql)
-    calculate_with_timmer('st_geomfromwkt', spark, sql)
-    data_df.unpersist(blocking=True)
-
-
-# @test_log
-# def run_st_geomfromtext(spark):
-#     file_path = os.path.join(data_path, 'st_geomfromtext.csv')
-#     data_df = spark.read.csv(file_path, sep='|', schema="data string").cache()
-#     data_df.createOrReplaceTempView("data")
-#     sql = "select ST_GeomFromText(data) from data"
-#     calculate_with_timmer('st_geomfromtext', spark, sql)
-#     calculate_with_timmer('st_geomfromtext', spark, sql)
-#     calculate_with_timmer('st_geomfromtext', spark, sql)
-#     data_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_intersection(spark):
-    file_path = os.path.join(data_path, 'st_intersection.csv')
-    intersection_df = spark.read.csv(file_path, sep='|', schema="left string, right string").cache()
-    intersection_df.createOrReplaceTempView("intersection")
-    sql = "select ST_Intersection(ST_GeomFromText(left), ST_GeomFromText(right)) from intersection"
-    calculate_with_timmer('st_intersection', spark, sql)
-    calculate_with_timmer('st_intersection', spark, sql)
-    calculate_with_timmer('st_intersection', spark, sql)
-    intersection_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_isvalid(spark):
-    file_path = os.path.join(data_path, 'st_isvalid.csv')
-    valid_df = spark.read.csv(file_path, sep='|', schema='geos string').cache()
-    valid_df.createOrReplaceTempView("valid")
-    sql = "select ST_IsValid(ST_GeomFromText(geos)) from valid"
-    calculate_with_timmer('st_isvalid', spark, sql)
-    calculate_with_timmer('st_isvalid', spark, sql)
-    calculate_with_timmer('st_isvalid', spark, sql)
-    valid_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_equals(spark):
-    file_path = os.path.join(data_path, 'st_equals.csv')
-    equals_df = spark.read.csv(file_path, sep='|', schema="left string, right string").cache()
-    equals_df.createOrReplaceTempView("equals")
-    sql = "select ST_Equals(ST_GeomFromText(left), ST_GeomFromText(right)) from equals"
-    calculate_with_timmer('st_equals', spark, sql)
-    calculate_with_timmer('st_equals', spark, sql)
-    calculate_with_timmer('st_equals', spark, sql)
-    equals_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_touches(spark):
-    file_path = os.path.join(data_path, 'st_touches.csv')
-    touches_df = spark.read.csv(file_path, sep='|', schema="left string, right string").cache()
-    touches_df.createOrReplaceTempView("touches")
-    sql = "select ST_Touches(ST_GeomFromText(left), ST_GeomFromText(right)) from touches"
-    calculate_with_timmer('st_touches', spark, sql)
-    calculate_with_timmer('st_touches', spark, sql)
-    calculate_with_timmer('st_touches', spark, sql)
-    touches_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_overlaps(spark):
-    file_path = os.path.join(data_path, 'st_overlaps.csv')
-    overlaps_df = spark.read.csv(file_path, sep='|', schema="left string, right string").cache()
-    overlaps_df.createOrReplaceTempView("overlaps")
-    sql = "select ST_Overlaps(ST_GeomFromText(left), ST_GeomFromText(right)) from overlaps"
-    calculate_with_timmer('st_overlaps', spark, sql)
-    calculate_with_timmer('st_overlaps', spark, sql)
-    calculate_with_timmer('st_overlaps', spark, sql)
-    overlaps_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_crosses(spark):
-    file_path = os.path.join(data_path, 'st_crosses.csv')
-    crosses_df = spark.read.csv(file_path, sep='|', schema="left string, right string").cache()
-    crosses_df.createOrReplaceTempView("crosses")
-    sql = "select ST_Crosses(ST_GeomFromText(left), ST_GeomFromText(right)) from crosses"
-    calculate_with_timmer('st_crosses', spark, sql)
-    calculate_with_timmer('st_crosses', spark, sql)
-    calculate_with_timmer('st_crosses', spark, sql)
-    crosses_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_issimple(spark):
-    file_path = os.path.join(data_path, 'st_issimple.csv')
-    simple_df = spark.read.csv(file_path, sep='|', schema='geos string').cache()
-    simple_df.createOrReplaceTempView("simple")
-    sql = "select ST_IsSimple(ST_GeomFromText(geos)) from simple"
-    calculate_with_timmer('st_issimple', spark, sql)
-    calculate_with_timmer('st_issimple', spark, sql)
-    calculate_with_timmer('st_issimple', spark, sql)
-    simple_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_geometry_type(spark):
-    file_path = os.path.join(data_path, 'st_geometry_type.csv')
-    geometry_type_df = spark.read.csv(file_path, sep='|', schema='geos string').cache()
-    geometry_type_df.createOrReplaceTempView("geometry_type")
-    sql = "select ST_GeometryType(ST_GeomFromText(geos)) from geometry_type"
-    calculate_with_timmer('st_geometry_type', spark, sql)
-    calculate_with_timmer('st_geometry_type', spark, sql)
-    calculate_with_timmer('st_geometry_type', spark, sql)
-    geometry_type_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_make_valid(spark):
-    file_path = os.path.join(data_path, 'st_make_valid.csv')
-    make_valid_df = spark.read.csv(file_path, sep='|', schema='geos string').cache()
-    make_valid_df.createOrReplaceTempView("make_valid")
-    sql = "select ST_MakeValid(ST_GeomFromText(geos)) from make_valid"
-    calculate_with_timmer('st_make_valid', spark, sql)
-    calculate_with_timmer('st_make_valid', spark, sql)
-    calculate_with_timmer('st_make_valid', spark, sql)
-    make_valid_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_simplify_preserve_topology(spark):
-    file_path = os.path.join(data_path, 'st_simplify_preserve_topology.csv')
-    simplify_preserve_topology_df = spark.read.csv(file_path, sep='|', schema='geos string').cache()
-    simplify_preserve_topology_df.createOrReplaceTempView("simplify_preserve_topology")
-    sql = "select ST_SimplifyPreserveTopology(ST_GeomFromText(geos), 10) from simplify_preserve_topology"
-    calculate_with_timmer('st_simplify_preserve_topology', spark, sql)
-    calculate_with_timmer('st_simplify_preserve_topology', spark, sql)
-    calculate_with_timmer('st_simplify_preserve_topology', spark, sql)
-    simplify_preserve_topology_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_polygon_from_envelope(spark):
-    file_path = os.path.join(data_path, 'st_polygon_from_envelope.csv')
-    polygon_from_envelope_df = spark.read.csv(file_path, sep='|',
-                                              schema="min_x double, min_y double, max_x double, max_y double").cache()
-    polygon_from_envelope_df.createOrReplaceTempView('polygon_from_envelope')
-    sql = "select ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y) from polygon_from_envelope"
-    calculate_with_timmer('st_polygon_from_envelope', spark, sql)
-    calculate_with_timmer('st_polygon_from_envelope', spark, sql)
-    calculate_with_timmer('st_polygon_from_envelope', spark, sql)
-    polygon_from_envelope_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_contains(spark):
-    file_path = os.path.join(data_path, 'st_contains.csv')
-    contains_df = spark.read.csv(file_path, sep='|', schema="left string, right string").cache()
-    contains_df.createOrReplaceTempView("contains")
-    sql = "select ST_Contains(ST_GeomFromText(left), ST_GeomFromText(right)) from contains"
-    calculate_with_timmer('st_contains', spark, sql)
-    calculate_with_timmer('st_contains', spark, sql)
-    calculate_with_timmer('st_contains', spark, sql)
-    contains_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_intersects(spark):
-    file_path = os.path.join(data_path, 'st_intersects.csv')
-    intersects_df = spark.read.csv(file_path, sep='|', schema="left string, right string").cache()
-    intersects_df.createOrReplaceTempView("intersects")
-    sql = "select ST_Intersects(ST_GeomFromText(left), ST_GeomFromText(right)) from intersects"
-    calculate_with_timmer('st_intersects', spark, sql)
-    calculate_with_timmer('st_intersects', spark, sql)
-    calculate_with_timmer('st_intersects', spark, sql)
-    intersects_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_within(spark):
-    file_path = os.path.join(data_path, 'st_within.csv')
-    within_df = spark.read.csv(file_path, sep='|', schema="left string, right string").cache()
-    within_df.createOrReplaceTempView("within")
-    sql = "select ST_Within(ST_GeomFromText(left), ST_GeomFromText(right)) from within"
-    calculate_with_timmer('st_within', spark, sql)
-    calculate_with_timmer('st_within', spark, sql)
-    calculate_with_timmer('st_within', spark, sql)
-    within_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_distance(spark):
-    file_path = os.path.join(data_path, 'st_distance.csv')
-    distance_df = spark.read.csv(file_path, sep='|', schema="left string, right string").cache()
-    distance_df.createOrReplaceTempView("distance")
-    sql = "select ST_Distance(ST_GeomFromText(left), ST_GeomFromText(right)) from distance"
-    calculate_with_timmer('st_distance', spark, sql)
-    calculate_with_timmer('st_distance', spark, sql)
-    calculate_with_timmer('st_distance', spark, sql)
-    distance_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_area(spark):
-    file_path = os.path.join(data_path, 'st_area.csv')
-    area_df = spark.read.csv(file_path, sep='|', schema='geos string').cache()
-    area_df.createOrReplaceTempView("area")
-    sql = "select ST_Area(ST_GeomFromText(geos)) from area"
-    calculate_with_timmer('st_area', spark, sql)
-    calculate_with_timmer('st_area', spark, sql)
-    calculate_with_timmer('st_area', spark, sql)
-    area_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_centroid(spark):
-    file_path = os.path.join(data_path, 'st_centroid.csv')
-    centroid_df = spark.read.csv(file_path, sep='|', schema='geos string').cache()
-    centroid_df.createOrReplaceTempView("centroid")
-    sql = "select ST_Centroid(ST_GeomFromText(geos)) from centroid"
-    calculate_with_timmer('st_centroid', spark, sql)
-    calculate_with_timmer('st_centroid', spark, sql)
-    calculate_with_timmer('st_centroid', spark, sql)
-    centroid_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_length(spark):
-    file_path = os.path.join(data_path, 'st_length.csv')
-    length_df = spark.read.csv(file_path, sep='|', schema='geos string').cache()
-    length_df.createOrReplaceTempView("length")
-    sql = "select ST_Length(ST_GeomFromText(geos)) from length"
-    calculate_with_timmer('st_length', spark, sql)
-    calculate_with_timmer('st_length', spark, sql)
-    calculate_with_timmer('st_length', spark, sql)
-    length_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_hausdorffdistance(spark):
-    file_path = os.path.join(data_path, 'st_hausdorffdistance.csv')
-    hausdorff_df = spark.read.csv(file_path, sep='|', schema="geo1 string, geo2 string").cache()
-    hausdorff_df.createOrReplaceTempView("hausdorff")
-    sql = "select ST_HausdorffDistance(ST_GeomFromText(geo1),ST_GeomFromText(geo2)) from hausdorff"
-    calculate_with_timmer('st_hausdorffdistance', spark, sql)
-    calculate_with_timmer('st_hausdorffdistance', spark, sql)
-    calculate_with_timmer('st_hausdorffdistance', spark, sql)
-    hausdorff_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_convexhull(spark):
-    file_path = os.path.join(data_path, 'st_convexhull.csv')
-    convexhull_df = spark.read.csv(file_path, sep='|', schema='geos string').cache()
-    convexhull_df.createOrReplaceTempView("convexhull")
-    sql = "select ST_convexhull(ST_GeomFromText(geos)) from convexhull"
-    calculate_with_timmer('st_convexhull', spark, sql)
-    calculate_with_timmer('st_convexhull', spark, sql)
-    calculate_with_timmer('st_convexhull', spark, sql)
-    convexhull_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_npoints(spark):
-    file_path = os.path.join(data_path, 'st_npoints.csv')
-    npoints_df = spark.read.csv(file_path, sep='|', schema='geos string').cache()
-    npoints_df.createOrReplaceTempView("npoints")
-    sql = "select ST_NPoints(ST_GeomFromText(geos)) from npoints"
-    calculate_with_timmer('st_npoints', spark, sql)
-    calculate_with_timmer('st_npoints', spark, sql)
-    calculate_with_timmer('st_npoints', spark, sql)
-    npoints_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_envelope(spark):
-    file_path = os.path.join(data_path, 'st_envelope.csv')
-    envelope_df = spark.read.csv(file_path, sep='|', schema='geos string').cache()
-    envelope_df.createOrReplaceTempView("envelope")
-    sql = "select ST_Envelope(ST_GeomFromText(geos)) from envelope"
-    calculate_with_timmer('st_envelope', spark, sql)
-    calculate_with_timmer('st_envelope', spark, sql)
-    calculate_with_timmer('st_envelope', spark, sql)
-    envelope_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_buffer(spark):
-    file_path = os.path.join(data_path, 'st_buffer.csv')
-    buffer_df = spark.read.csv(file_path, sep='|', schema='geos string').cache()
-    buffer_df.createOrReplaceTempView("buffer")
-    sql = "select ST_Buffer(ST_GeomFromText(geos), 1.2) from buffer"
-    calculate_with_timmer('st_buffer', spark, sql)
-    calculate_with_timmer('st_buffer', spark, sql)
-    calculate_with_timmer('st_buffer', spark, sql)
-    buffer_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_union_aggr(spark):
-    file_path = os.path.join(data_path, 'st_union_aggr.csv')
-    union_aggr_df1 = spark.read.csv(file_path, sep='|', schema='geos string').cache()
-    union_aggr_df1.createOrReplaceTempView("union_aggr1")
-    sql = "select ST_GeomFromText(geos) as geos from union_aggr1"
-    calculate_union_agg_with_timmer('st_union_aggr', spark, sql)
-    calculate_union_agg_with_timmer('st_union_aggr', spark, sql)
-    calculate_union_agg_with_timmer('st_union_aggr', spark, sql)
-    union_aggr_df1.unpersist(blocking=True)
-
-
-@test_log
-def run_st_envelope_aggr(spark):
-    file_path = os.path.join(data_path, 'st_envelope_aggr.csv')
-    envelope_aggr_df = spark.read.csv(file_path, sep='|', schema='geos string')
-    envelope_aggr_df.createOrReplaceTempView('envelope_aggr')
-    sql = "select ST_GeomFromText(geos) as geos from envelope_aggr"
-    calculate_envelope_agg_with_timmer('st_envelope_aggr', spark, sql)
-    calculate_envelope_agg_with_timmer('st_envelope_aggr', spark, sql)
-    calculate_envelope_agg_with_timmer('st_envelope_aggr', spark, sql)
-    envelope_aggr_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_transform(spark):
-    file_path = os.path.join(data_path, 'st_transform.csv')
-    buffer_df = spark.read.csv(file_path, sep='|', schema='geos string').cache()
-    buffer_df.createOrReplaceTempView("buffer")
-    sql = "select ST_Transform(ST_GeomFromText(geos), 'epsg:4326', 'epsg:3857') from buffer"
-    calculate_with_timmer('st_transform', spark, sql)
-    calculate_with_timmer('st_transform', spark, sql)
-    calculate_with_timmer('st_transform', spark, sql)
-    buffer_df.unpersist(blocking=True)
-
-
-@test_log
-def run_st_curvetoline(spark):
-    file_path = os.path.join(data_path, 'st_curvetoline.csv')
-    buffer_df = spark.read.csv(file_path, sep='|', schema='geos string').cache()
-    buffer_df.createOrReplaceTempView("buffer")
-    sql = "select ST_CurveToLine(ST_GeomFromText(geos)) from buffer"
-    calculate_with_timmer('st_curvetoline', spark, sql)
-    calculate_with_timmer('st_curvetoline', spark, sql)
-    calculate_with_timmer('st_curvetoline', spark, sql)
-    buffer_df.unpersist(blocking=True)
+def func_template(spark, test_name):
+    file_name, schema, sql_ = maps.get(test_name)
+    file_path = get_file_path(file_name)
+    if not file_path:
+        return
+    df = spark.read.csv(file_path, sep='|', schema=schema).cache()
+    df_name = "df_" + test_name
+    df.createOrReplaceTempView(df_name)
+    sql = sql_ % df_name
+    for i in range(exec_times):
+        func_with_timmer(spark, sql, test_name = test_name)
+    df.unpersist(blocking=True)
+
+def agg_func_template(spark, test_name):
+    agg_func_map = {
+        'st_envelope_aggr': envelope_aggr,
+        'st_union_aggr': union_aggr,
+    }
+    agg_func = agg_func_map.get(test_name, None)
+    if not callable(agg_func):
+        return
+
+    file_name, schema, sql_ = maps.get(test_name)
+    file_path = get_file_path(file_name)
+    if not file_path:
+        return
+    df = spark.read.csv(file_path, sep='|', schema=schema).cache()
+    df_name = "df_" + test_name
+    df.createOrReplaceTempView(df_name)
+    sql = sql_ % df_name
+
+    df2 = spark.sql(sql).cache()
+    df2_name = "df2_" + test_name
+    df2.createOrReplaceTempView(df2_name)
+    spark.sql("CACHE TABLE %s"%df2_name)
+
+    @timmer
+    def aggfunc_with_timmer(spark, test_name, agg_func=agg_func):
+        rdf = agg_func(df2, "geos")
+        if show_df:
+            print("function_agg:", test_name)
+            print(rdf)
+            print('-'*10)
+
+    for i in range(exec_times):
+        aggfunc_with_timmer(spark, test_name=test_name)
+
+    spark.sql("UNCACHE TABLE %s"%df2_name)
+    df2.unpersist(blocking=True)
+    df.unpersist(blocking=True)
 
 
 def parse_args(argv):
     import sys, getopt
     try:
-        opts, args = getopt.getopt(argv, "h:p:f:o:", ["path", "function", "output"])
-    except getopt.GetoptError:
-        print('python test_udf_from_csv.py -p <data path> -f <function name, default all udf functions> -o <output>')
+        opts, args = getopt.getopt(argv, "h:p:f:o:t:s:", ["path", "function", "output", "times", "show_df"])
+    except getopt.GetoptError as e:
+        print("ddd")
+        print(str(e))
+        print_usage()
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print(
-                'python test_udf_from_csv.py -p <data path> -f <function name, default all udf functions> -o <output>')
+            print_usage()
             sys.exit()
         elif opt in ("-p", "--path"):
             global data_path
@@ -569,6 +391,16 @@ def parse_args(argv):
         elif opt in ("-o", "--output"):
             global output_path
             output_path = arg
+        elif opt in ("-t", "--times"):
+            global exec_times
+            exec_times = int(arg)
+        elif opt in ("-s", "--show_df"):
+            global show_df
+            try:
+                show_df = eval(arg)
+            except:
+                show_df = False
+
     global to_hdfs
     to_hdfs = is_hdfs(output_path)
     if is_hdfs(output_path):
@@ -579,12 +411,44 @@ def parse_args(argv):
     # report_file_path = os.path.join(output_path, time.strftime("%Y-%m-%d-", time.localtime()) + 'report.txt')
 
 
+    print("data_path", data_path)
+    print("function", test_name)
+    print("output_path", output_path)
+    print("exec_times", exec_times)
+    print("show_df:", show_df)
+    return bool(output_path) and bool(data_path)
+
+def print_usage():
+    print("Usage\n")
+    print(
+        """
+            -p --path data_path
+            -f --function function names ,separated by comma, if empty, test all functions.
+            -o --output output path
+            -t --times execute times
+            -s --show_df whether to show df
+        """
+        )
+
+
+
+def exec_func(spark, test_name):
+    agg_func_names = ("st_union_aggr", "st_envelope_aggr")
+    func =  agg_func_template if test_name in agg_func_names else func_template
+    func(spark, test_name)
+
 if __name__ == "__main__":
-    parse_args(sys.argv[1:])
+    import sys
+    if len(sys.argv) < 2 or not parse_args(sys.argv[1:]):
+        print("ooo")
+        print_usage()
+        sys.exit(1)
+
     if to_hdfs:
         url, port = hdfs_url.split(':')
         fs = pa.hdfs.connect(url, int(port))
     else:
+        fs = os.path
         os.makedirs(output_path, exist_ok=True)
 
     spark_session = SparkSession \
@@ -596,46 +460,11 @@ if __name__ == "__main__":
 
     register_funcs(spark_session)
 
-    funcs = {
-        'st_point': run_st_point,
-        'st_intersection': run_st_intersection,
-        'st_isvalid': run_st_isvalid,
-        'st_equals': run_st_equals,
-        'st_touches': run_st_touches,
-        'st_overlaps': run_st_overlaps,
-        'st_crosses': run_st_crosses,
-        'st_issimple': run_st_issimple,
-        'st_geometry_type': run_st_geometry_type,
-        'st_make_valid': run_st_make_valid,
-        'st_simplify_preserve_topology': run_st_simplify_preserve_topology,
-        'st_polygon_from_envelope': run_st_polygon_from_envelope,
-        'st_contains': run_st_contains,
-        'st_intersects': run_st_intersects,
-        'st_within': run_st_within,
-        'st_distance': run_st_distance,
-        'st_area': run_st_area,
-        'st_centroid': run_st_centroid,
-        'st_length': run_st_length,
-        'st_hausdorffdistance': run_st_hausdorffdistance,
-        'st_convexhull': run_st_convexhull,
-        'st_npoints': run_st_npoints,
-        'st_envelope': run_st_envelope,
-        'st_buffer': run_st_buffer,
-        'st_union_aggr': run_st_union_aggr,
-        'st_envelope_aggr': run_st_envelope_aggr,
-        'st_transform': run_st_transform,
-        'st_curvetoline': run_st_curvetoline,
-        'st_geomfromgeojson': run_st_geomfromgeojson,
-        'st_pointfromtext': run_st_pointfromtext,
-        'st_polygonfromtext': run_st_polygonfromtext,
-        'st_linestringfromtext': run_st_linestringfromtext,
-        'st_geomfromwkt': run_st_geomfromwkt,
-        # 'st_geomfromtext': run_st_geomfromtext,
-        'st_astext': run_st_astext,
-    }
-
-    test_name = test_name or funcs.keys()
+    test_name = test_name or maps.keys()
+    #test_name = ["st_curvetoline",]
     for test in test_name:
-        funcs[test](spark_session)
+        print("--------Start test", test + " " , exec_times ,  " times" "--------")
+        exec_func(spark_session, test)
+        print("--------Finish test", test + " " , exec_times ,  " times" "--------")
 
     spark_session.stop()
