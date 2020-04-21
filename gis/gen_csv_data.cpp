@@ -208,27 +208,27 @@ const std::vector<std::string> st_within_pool = {
 };
 
 std::map<std::string, std::vector<std::string>> pools = {
-        {"single_polygon", single_polygon_pool},
-        {"double_col", double_col_pool},
-        {"single_col", single_col_pool},
-        {"single_linestring", single_linestring_pool},
-        {"single_point", single_point_pool},
-        {"st_curvetoline", st_curvetoline_pool},
-        {"st_distance", st_distance_pool},
-        {"st_geomfromgeojson", st_geomfromgeojson_pool},
-        {"st_point", st_point_pool},
+        {"single_polygon",           single_polygon_pool},
+        {"double_col",               double_col_pool},
+        {"single_col",               single_col_pool},
+        {"single_linestring",        single_linestring_pool},
+        {"single_point",             single_point_pool},
+        {"st_curvetoline",           st_curvetoline_pool},
+        {"st_distance",              st_distance_pool},
+        {"st_geomfromgeojson",       st_geomfromgeojson_pool},
+        {"st_point",                 st_point_pool},
         {"st_polygon_from_envelope", st_polygon_from_envelope_pool},
-        {"st_within", st_within_pool}
+        {"st_within",                st_within_pool}
 
 };
 
 
 static void write_data(const std::string &path, const std::string &pattern_name, long rows, long batch_size) {
 
-   if (pools.find(pattern_name) == pools.end()){
-	std::cout << "Failed to generate "<< pattern_name <<".csv"<<std::endl;
-	return;
-    } 
+    if (pools.find(pattern_name) == pools.end()) {
+        std::cout << "Failed to generate " << pattern_name << ".csv" << std::endl;
+        return;
+    }
 
     std::ofstream file;
     std::string dir_path = path + "/10_" + std::to_string(int(std::log10(rows)));
@@ -243,22 +243,29 @@ static void write_data(const std::string &path, const std::string &pattern_name,
         exit(1);
     }
 
-    int total = rows;
+    auto total = rows;
     std::string batch;
     time_t t;
     srandom(time(&t));
-    if (total < batch_size) {
-        batch_size = total;
-    }
     auto pool = pools[pattern_name];
+
+    /* Since we want to cover pool data as many as possible,
+     * write min(total,pool size) rows data as initial data.
+     */
+    auto init_size = std::min(total, long(pool.size()));
+    batch.clear();
+    for (auto j = 0; j < init_size; ++j) {
+        batch.append(pool[j] + '\n');
+    }
+    file << batch;
+
+    total -= init_size;
+    batch_size = std::min(batch_size, total);
     bool has_remain = (total > 0);
-    batch.reserve(batch_size * 15);
+
     while (has_remain) {
         batch.clear();
-        for (int j = 0; j < pool.size(); ++j){
-            batch.append(pool[j]+'\n');
-        }
-        for (int j = 0; j < batch_size - pool.size(); ++j) {
+        for (auto j = 0; j != batch_size; ++j) {
             auto i = random() % pool.size();
             batch.append(pool[i] + '\n');
         }
@@ -271,34 +278,34 @@ static void write_data(const std::string &path, const std::string &pattern_name,
     std::cout << "Generate " << pattern_name << ".csv done." << std::endl;
 }
 
-static void split(const std::string& s, std::vector<std::string>& tokens, const std::string& delimiters = ",")
-{
-	std::string::size_type lastPos = s.find_first_not_of(delimiters, 0);
-	std::string::size_type pos = s.find_first_of(delimiters, lastPos);
-        while (std::string::npos != pos || std::string::npos != lastPos) {
-                tokens.push_back(s.substr(lastPos, pos - lastPos));
-                lastPos = s.find_first_not_of(delimiters, pos);
-                pos = s.find_first_of(delimiters, lastPos);
-        }
+static void split(const std::string &s, std::vector<std::string> &tokens, const std::string &delimiters = ",") {
+    std::string::size_type lastPos = s.find_first_not_of(delimiters, 0);
+    std::string::size_type pos = s.find_first_of(delimiters, lastPos);
+    while (std::string::npos != pos || std::string::npos != lastPos) {
+        tokens.push_back(s.substr(lastPos, pos - lastPos));
+        lastPos = s.find_first_not_of(delimiters, pos);
+        pos = s.find_first_of(delimiters, lastPos);
+    }
 }
 
 
-static void print_help(){
-	std::cout<<"Usage:\n";
-	std::cout<<"\t -r number of rows, requried.\n";
-	std::cout<<"\t -o output path, required.\n";
-	std::cout<<"\t -p pattern names, requried. sperated by comma, single_polygon,double_col, for example. if specified as 'all', will genenrate all patterns.\n";
-	std::cout<<"\t -b batch size of per write, optional, default is 100000000.\n";
-	std::cout<<std::endl;
+static void print_help() {
+    std::cout << "Usage:\n";
+    std::cout << "\t -r number of rows, requried.\n";
+    std::cout << "\t -o output path, required.\n";
+    std::cout
+            << "\t -p pattern names, requried. sperated by comma, single_polygon,double_col, for example. if specified as 'all', will genenrate all patterns.\n";
+    std::cout << "\t -b batch size of per write, optional, default is 100000000.\n";
+    std::cout << std::endl;
 }
 
-static void print_params(long rows, const std::string& output_path, const std::string& patterns, int batch_size){
-    std::cout<<"***************"<<std::endl;
-    std::cout<<"Rows: " << rows << std::endl;
-    std::cout<<"Patterns: " << patterns<< std::endl;
-    std::cout<<"Output Path: " << output_path << std::endl;
-    std::cout<<"Batch Size: " << batch_size << std::endl;
-    std::cout<<"***************"<<std::endl;
+static void print_params(long rows, const std::string &output_path, const std::string &patterns, int batch_size) {
+    std::cout << "***************" << std::endl;
+    std::cout << "Rows: " << rows << std::endl;
+    std::cout << "Patterns: " << patterns << std::endl;
+    std::cout << "Output Path: " << output_path << std::endl;
+    std::cout << "Batch Size: " << batch_size << std::endl;
+    std::cout << "***************" << std::endl;
 }
 
 int main(int argc, char *argv[]) {
@@ -313,42 +320,42 @@ int main(int argc, char *argv[]) {
         switch (opt) {
             case 'r': {
                 rows = atol(optarg);
-		valid = rows > 0;
-		break;
+                valid = rows > 0;
+                break;
             }
             case 'o': {
                 output_path = optarg;
-		valid = not output_path.empty();
-		break;
+                valid = not output_path.empty();
+                break;
             }
             case 'p': {
                 patterns = optarg;
-		valid = not patterns.empty();
-		break;
+                valid = not patterns.empty();
+                break;
             }
-	    case 'b': {
+            case 'b': {
                 batch_size = atol(optarg);
-		valid = batch_size > 0;
-		break;
+                valid = batch_size > 0;
+                break;
             }
         }
     }
-    valid = valid and not (output_path.empty() or patterns.empty());
-    if (valid){
-	    print_params(rows, output_path, patterns, batch_size);
-	    std::vector<std::string> pattern_names;
-	    if (patterns == "all"){
-		for(auto it = pools.begin(); it != pools.end(); ++it) {
-		  pattern_names.push_back(it->first);
-		}
-	    }else{
-	    	split(patterns, pattern_names);
-	    }
-	    for(const auto& pattern_name: pattern_names){
-	    	write_data(output_path, pattern_name, rows, batch_size);
-	    }
-    }else{
-	print_help();
+    valid = valid and not(output_path.empty() or patterns.empty());
+    if (valid) {
+        print_params(rows, output_path, patterns, batch_size);
+        std::vector<std::string> pattern_names;
+        if (patterns == "all") {
+            for (auto it = pools.begin(); it != pools.end(); ++it) {
+                pattern_names.push_back(it->first);
+            }
+        } else {
+            split(patterns, pattern_names);
+        }
+        for (const auto &pattern_name: pattern_names) {
+            write_data(output_path, pattern_name, rows, batch_size);
+        }
+    } else {
+        print_help();
     }
 #endif
     return 0;
