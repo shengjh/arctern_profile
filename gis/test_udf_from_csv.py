@@ -112,7 +112,7 @@ maps = {
             ),
 
         'st_linestringfromtext': (
-            'single_lingstring',
+            'single_linestring',
             'geos string',
             "select ST_LineStringFromText(geos) from %s",
             # "select ST_AsText(ST_LineStringFromText(geos)) from %s",
