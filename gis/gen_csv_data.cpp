@@ -271,6 +271,7 @@ static void write_data(const std::string &path, const std::string &pattern_name,
         }
         file << batch;
         total -= batch_size;
+        batch_size = std::min(batch_size, total);
         has_remain = (total > 0);
     }
 
