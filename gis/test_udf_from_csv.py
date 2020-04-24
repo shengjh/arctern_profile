@@ -30,229 +30,281 @@ fs = None
 show_df = False
 exec_times = 6
 
+show_as_text = False
+
 maps = {
 
-        'st_area': (
-            'single_polygon',  #file_name
-            'geos string', #schema
-            "select ST_Area(ST_GeomFromText(geos)) from %s", #sql
-            ),
+    'st_area': (
+        'single_polygon',  #file_name
+        'geos string', #schema
+        "select ST_GeomFromText(geos) as geos from %s",
+        "select ST_Area(geos) from %s", #sql
+        "select ST_Area(geos) from %s", #sql
+    ),
 
-        'st_astext': (
-            'single_polygon',
-            'geos string',
-            # "select ST_AsText(ST_PolygonFromText(geos)) from %s",
-            "select ST_PolygonFromText(geos) from %s",
-            ),
+    'st_astext': (
+        'single_polygon',
+        'geos string',
+        "select ST_PolygonFromText(geos) as geos from %s",
+        "select ST_AsText(geos) from %s",
+        "select ST_AsText(geos) from %s",
+    ),
 
-        'st_envelope_aggr': (
-            'single_polygon',
-            'geos string',
-            "select ST_GeomFromText(geos) as geos from %s",
-            ),
+    'st_envelope_aggr': (
+        'single_polygon',
+        'geos string',
+        '',
+        "select ST_GeomFromText(geos) as geos from %s",
+        "select ST_GeomFromText(geos) as geos from %s",
+    ),
 
-        'st_envelope': (
-            'single_polygon',
-            'geos string',
-            "select ST_Envelope(ST_GeomFromText(geos)) from %s",
-            # "select ST_AsText(ST_Envelope(ST_GeomFromText(geos))) from %s",
-            ),
+    'st_envelope': (
+        'single_polygon',
+        'geos string',
+        "select ST_GeomFromText(geos) as geos from %s",
+        "select ST_Envelope(geos) from %s",
+        "select ST_AsText(ST_Envelope(geos)) from %s",
+    ),
 
-        'st_geomfromwkt': (
-            'single_polygon',
-            'geos string',
-            "select ST_GeomFromWKT(geos) from %s",
-            # "select ST_AsText(ST_GeomFromWKT(geos)) from %s",
-            ),
+    'st_geomfromwkt': (
+        'single_polygon',
+        'geos string',
+        '',
+        "select ST_GeomFromWKT(geos) from %s",
+        "select ST_AsText(ST_GeomFromWKT(geos)) from %s",
+    ),
 
-        'st_union_aggr': (
-            'single_polygon',
-            'geos string',
-            "select ST_GeomFromText(geos) as geos from %s",
-            ),
+    'st_union_aggr': (
+        'single_polygon',
+        'geos string',
+        '',
+        "select ST_GeomFromText(geos) as geos from %s",
+        "select ST_GeomFromText(geos) as geos from %s",
+    ),
 
-        'st_issimple': (
-            'single_polygon',
-            'geos string',
-            "select ST_IsSimple(ST_GeomFromText(geos)) from %s",
-            ),
+    'st_issimple': (
+        'single_polygon',
+        'geos string',
+        "select ST_GeomFromText(geos) as geos from %s",
+        "select ST_IsSimple(geos) from %s",
+        "select ST_IsSimple(geos) from %s",
+    ),
 
-        'st_polygonfromtext': (
-            'single_polygon',
-            'geos string',
-            "select ST_PolygonFromText(geos) from %s",
-            # "select ST_AsText(ST_PolygonFromText(geos)) from %s",
-            ),
+    'st_polygonfromtext': (
+        'single_polygon',
+        'geos string',
+        '',
+        "select ST_PolygonFromText(geos) from %s",
+        "select ST_AsText(ST_PolygonFromText(geos)) from %s",
+    ),
 
-        'st_pointfromtext': (
-            'single_point',
-            'geos string',
-            "select ST_PointFromText(geos) from %s",
-            # "select ST_AsText(ST_PointFromText(geos)) from %s",
-            ),
+    'st_pointfromtext': (
+        'single_point',
+        'geos string',
+        '',
+        "select ST_PointFromText(geos) from %s",
+        "select ST_AsText(ST_PointFromText(geos)) from %s",
+    ),
 
-        'st_transform': (
-            'single_point',
-            'geos string',
-            "select ST_Transform(ST_GeomFromText(geos), 'epsg:4326', 'epsg:3857') from %s",
-            # "select ST_AsText(ST_Transform(ST_GeomFromText(geos), 'epsg:4326', 'epsg:3857')) from %s",
-            ),
+    'st_transform': (
+        'single_point',
+        'geos string',
+        "select ST_GeomFromText(geos) as geos from %s",
+        "select ST_Transform(geos, 'epsg:4326', 'epsg:3857') from %s",
+        "select ST_AsText(ST_Transform(geos, 'epsg:4326', 'epsg:3857')) from %s",
+    ),
 
-        'st_buffer': (
-            'single_point',
-            'geos string',
-            "select ST_Buffer(ST_GeomFromText(geos), 1.2) from %s",
-            # "select ST_AsText(ST_Buffer(ST_GeomFromText(geos), 1.2)) from %s",
-            ),
+    'st_buffer': (
+        'single_point',
+        'geos string',
+        "select ST_GeomFromText(geos) as geos from %s",
+        "select ST_Buffer(geos, 1.2) from %s",
+        "select ST_AsText(ST_Buffer(geos, 1.2)) from %s",
+    ),
 
-        'st_length': (
-            'single_linestring',
-            'geos string',
-            "select ST_Length(ST_GeomFromText(geos)) from %s",
-            ),
+    'st_length': (
+        'single_linestring',
+        'geos string',
+        "select ST_GeomFromText(geos) as geos from %s",
+        "select ST_Length(geos) from %s",
+        "select ST_Length(geos) from %s",
+    ),
 
-        'st_linestringfromtext': (
-            'single_lingstring',
-            'geos string',
-            "select ST_LineStringFromText(geos) from %s",
-            # "select ST_AsText(ST_LineStringFromText(geos)) from %s",
-            ),
+    'st_linestringfromtext': (
+        'single_linestring',
+        'geos string',
+        '',
+        "select ST_LineStringFromText(geos) from %s",
+        "select ST_AsText(ST_LineStringFromText(geos)) from %s",
+    ),
 
-        'st_isvalid': (
-            'single_col',
-            'geos string',
-            "select ST_IsValid(ST_GeomFromText(geos)) from %s",
-            ),
+    'st_isvalid': (
+        'single_col',
+        'geos string',
+        "select ST_GeomFromText(geos) as geos from %s",
+        "select ST_IsValid(geos) from %s",
+        "select ST_IsValid(geos) from %s",
+    ),
 
-        'st_npoints': (
-            'single_col',
-            'geos string',
-            "select ST_NPoints(ST_GeomFromText(geos)) from %s",
-        ),
+    'st_npoints': (
+        'single_col',
+        'geos string',
+        "select ST_GeomFromText(geos) as geos from %s",
+        "select ST_NPoints(geos) from %s",
+        "select ST_NPoints(geos) from %s",
+    ),
 
-        'st_centroid': (
-            'single_col',
-            'geos string',
-            "select ST_Centroid(ST_GeomFromText(geos)) from %s",
-            # "select ST_AsText(ST_Centroid(ST_GeomFromText(geos))) from %s",
-        ),
+    'st_centroid': (
+        'single_col',
+        'geos string',
+        "select ST_GeomFromText(geos) as geos from %s",
+        "select ST_Centroid(geos) from %s",
+        "select ST_AsText(ST_Centroid(geos)) from %s",
+    ),
 
-        'st_convexhull': (
-            'single_col',
-            'geos string',
-            "select ST_convexhull(ST_GeomFromText(geos)) from %s",
-            # "select ST_AsText(ST_convexhull(ST_GeomFromText(geos))) from %s",
-        ),
+    'st_convexhull': (
+        'single_col',
+        'geos string',
+        "select ST_GeomFromText(geos) as geos from %s",
+        "select ST_convexhull(geos) from %s",
+        "select ST_AsText(ST_convexhull(geos)) from %s",
+    ),
 
-        'st_geometry_type': (
-            'single_col',
-            'geos string',
-            "select ST_GeometryType(ST_GeomFromText(geos)) from %s",
-        ),
+    'st_geometry_type': (
+        'single_col',
+        'geos string',
+        "select ST_GeomFromText(geos) as geos from %s",
+        "select ST_GeometryType(geos) from %s",
+        "select ST_GeometryType(geos) from %s",
+    ),
 
-        'st_simplify_preserve_topology': (
-            'single_col',
-            'geos string',
-            "select ST_SimplifyPreserveTopology(ST_GeomFromText(geos), 10) from %s",
-            # "select ST_AsText(ST_SimplifyPreserveTopology(ST_GeomFromText(geos), 10)) from %s",
-        ),
+    'st_simplify_preserve_topology': (
+        'single_col',
+        'geos string',
+        "select ST_GeomFromText(geos) as geos from %s",
+        "select ST_SimplifyPreserveTopology(geos, 10) from %s",
+        "select ST_AsText(ST_SimplifyPreserveTopology(geos, 10)) from %s",
+    ),
 
-        'st_make_valid': (
-            'single_col',
-            'geos string',
-            "select ST_MakeValid(ST_GeomFromText(geos)) from %s",
-            # "select ST_AsText(ST_MakeValid(ST_GeomFromText(geos))) from %s",
-        ),
+    'st_make_valid': (
+        'single_col',
+        'geos string',
+        "select ST_GeomFromText(geos) as geos from %s",
+        "select ST_MakeValid(geos) from %s",
+        "select ST_AsText(ST_MakeValid(geos)) from %s",
+    ),
 
-        'st_intersection': (
-            'double_col',
-            "left string, right string",
-            "select ST_Intersection(ST_GeomFromText(left), ST_GeomFromText(right)) from %s",
-            # "select ST_AsText(ST_Intersection(ST_GeomFromText(left), ST_GeomFromText(right))) from %s",
-        ),
+    'st_intersection': (
+        'double_col',
+        "left string, right string",
+        "select ST_GeomFromText(left) as left, ST_GeomFromText(right) as right from %s",
+        "select ST_Intersection(left, right) from %s",
+        "select ST_AsText(ST_Intersection(left, right)) from %s",
+    ),
 
+    'st_intersects': (
+        'double_col',
+        "left string, right string",
+        "select ST_GeomFromText(left) as left, ST_GeomFromText(right) as right from %s",
+        "select ST_Intersects(left, right) from %s",
+        "select ST_Intersects(left, right) from %s",
+    ),
 
-        'st_intersects': (
-            'double_col',
-            "left string, right string",
-            "select ST_Intersects(ST_GeomFromText(left), ST_GeomFromText(right)) from %s",
-        ),
+    'st_overlaps': (
+        'double_col',
+        "left string, right string",
+        "select ST_GeomFromText(left) as left, ST_GeomFromText(right) as right from %s",
+        "select ST_Overlaps(left, right) from %s",
+        "select ST_Overlaps(left, right) from %s",
+    ),
 
-        'st_overlaps': (
-            'double_col',
-            "left string, right string",
-            "select ST_Overlaps(ST_GeomFromText(left), ST_GeomFromText(right)) from %s",
-        ),
+    'st_contains': (
+        'double_col',
+        "left string, right string",
+        "select ST_GeomFromText(left) as left, ST_GeomFromText(right) as right from %s",
+        "select ST_Contains(left, right) from %s",
+        "select ST_Contains(left, right) from %s",
+    ),
 
-        'st_contains': (
-            'double_col',
-            "left string, right string",
-            "select ST_Contains(ST_GeomFromText(left), ST_GeomFromText(right)) from %s",
-        ),
+    'st_equals': (
+        'double_col',
+        "left string, right string",
+        "select ST_GeomFromText(left) as left, ST_GeomFromText(right) as right from %s",
+        "select ST_Equals(left, right) from %s",
+        "select ST_Equals(left, right) from %s",
+    ),
 
-        'st_equals': (
-            'double_col',
-            "left string, right string",
-            "select ST_Equals(ST_GeomFromText(left), ST_GeomFromText(right)) from %s",
-        ),
+    'st_crosses': (
+        'double_col',
+        "left string, right string",
+        "select ST_GeomFromText(left) as left, ST_GeomFromText(right) as right from %s",
+        "select ST_Crosses(left, right) from %s",
+        "select ST_Crosses(left, right) from %s",
+    ),
 
-        'st_crosses': (
-            'double_col',
-            "left string, right string",
-            "select ST_Crosses(ST_GeomFromText(left), ST_GeomFromText(right)) from %s",
-        ),
+    'st_touches': (
+        'double_col',
+        "left string, right string",
+        "select ST_GeomFromText(left) as left, ST_GeomFromText(right) as right from %s",
+        "select ST_Touches(left, right) from %s",
+        "select ST_Touches(left, right) from %s",
+    ),
 
-        'st_touches': (
-            'double_col',
-            "left string, right string",
-            "select ST_Touches(ST_GeomFromText(left), ST_GeomFromText(right)) from %s",
-        ),
+    'st_hausdorffdistance': (
+        'double_col',
+        "left string, right string",
+        "select ST_GeomFromText(left) as left, ST_GeomFromText(right) as right from %s",
+        "select ST_HausdorffDistance(left, right) from %s",
+        "select ST_HausdorffDistance(left, right) from %s",
+    ),
 
-        'st_hausdorffdistance': (
-            'double_col',
-            "left string, right string",
-            "select ST_HausdorffDistance(ST_GeomFromText(left),ST_GeomFromText(right)) from %s",
-        ),
+    'st_distance': (
+        'st_distance',
+        "left string, right string",
+        "select ST_GeomFromText(left) as left, ST_GeomFromText(right) as right from %s",
+        "select ST_Distance(left, right) from %s",
+        "select ST_Distance(left, right) from %s",
+    ),
 
-        'st_distance': (
-            'st_distance',
-            "left string, right string",
-            "select ST_Distance(ST_GeomFromText(left), ST_GeomFromText(right)) from %s",
-        ),
+    'st_within': (
+        'st_within',
+        "left string, right string",
+        "select ST_GeomFromText(left) as left, ST_GeomFromText(right) as right from %s",
+        "select ST_Within(left, right) from %s",
+        "select ST_Within(left, right) from %s",
+    ),
 
-        'st_within': (
-            'st_within',
-            "left string, right string",
-            "select ST_Within(ST_GeomFromText(left), ST_GeomFromText(right)) from %s",
-        ),
+    'st_curvetoline': (
+        'st_curvetoline',
+        'geos string',
+        "select ST_GeomFromText(geos) as geos from %s",
+        "select ST_CurveToLine(geos) from %s",
+        "select ST_AsText(ST_CurveToLine(geos)) from %s",
+    ),
 
-        'st_curvetoline': (
-            'st_curvetoline',
-            'geos string',
-            "select ST_CurveToLine(ST_GeomFromText(geos)) from %s",
-            # "select ST_AsText(ST_CurveToLine(ST_GeomFromText(geos))) from %s",
-        ),
+    'st_point': (
+        'st_point',
+        'x double, y double',
+        '',
+        "select ST_Point(x, y) from %s",
+        "select ST_AsText(ST_Point(x, y)) from %s",
+    ),
 
-        'st_point': (
-            'st_point',
-            'x double, y double',
-            # "select ST_AsText(ST_Point(x, y)) from %s",
-            "select ST_Point(x, y) from %s",
-        ),
+    'st_polygon_from_envelope': (
+        'st_polygon_from_envelope',
+        "min_x double, min_y double, max_x double, max_y double",
+        '',
+        "select ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y) from %s",
+        "select ST_AsText(ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y)) from %s",
+    ),
 
-        'st_polygon_from_envelope': (
-            'st_polygon_from_envelope',
-            "min_x double, min_y double, max_x double, max_y double",
-            "select ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y) from %s",
-            # "select ST_AsText(ST_PolygonFromEnvelope(min_x, min_y, max_x, max_y)) from %s",
-        ),
-
-        'st_geomfromgeojson': (
-            'st_geomfromgeojson',
-            'geos string',
-            "select ST_GeomFromGeoJSON(geos) from %s",
-            # "select ST_AsText(ST_GeomFromGeoJSON(geos)) from %s",
-        ),
+    'st_geomfromgeojson': (
+        'st_geomfromgeojson',
+        'geos string',
+        '',
+        "select ST_GeomFromGeoJSON(geos) from %s",
+        "select ST_AsText(ST_GeomFromGeoJSON(geos)) from %s",
+    ),
 
 }
 
@@ -320,16 +372,36 @@ def test_log(f):
 
 
 def func_template(spark, test_name):
-    file_name, schema, sql_ = maps.get(test_name)
+    if show_as_text:
+        file_name, schema, sql_1, _, sql_2 = maps.get(test_name)
+    else:
+        file_name, schema, sql_1, sql_2, _ = maps.get(test_name)
+
     file_path = get_file_path(file_name)
     if not file_path:
         return
     df = spark.read.csv(file_path, sep='|', schema=schema).cache()
     df_name = "df_" + test_name
     df.createOrReplaceTempView(df_name)
-    sql = sql_ % df_name
+
+    if sql_1:
+        sql_1 = sql_1%df_name
+        df_wkb =  spark.sql(sql_1)
+        df_wkb_name = "df_wkb_" + test_name
+        df_wkb.createOrReplaceTempView(df_wkb_name)
+        spark.sql("CACHE TABLE %s"%df_wkb_name)
+
+    query_name = df_wkb_name if sql_1 else df_name
+
+    sql = sql_2 % query_name
     for i in range(exec_times):
+        #print("sql:", sql)
         func_with_timmer(spark, sql, test_name = test_name)
+
+    if sql_1:
+        spark.sql("UNCACHE TABLE %s"%df_wkb_name)
+        df_wkb.unpersist(blocking=True)
+
     df.unpersist(blocking=True)
 
 def agg_func_template(spark, test_name):
@@ -341,7 +413,11 @@ def agg_func_template(spark, test_name):
     if not callable(agg_func):
         return
 
-    file_name, schema, sql_ = maps.get(test_name)
+    if show_as_text:
+        file_name, schema, _, _, sql_ = maps.get(test_name)
+    else:
+        file_name, schema, _, sql_, _ = maps.get(test_name)
+
     file_path = get_file_path(file_name)
     if not file_path:
         return
@@ -430,7 +506,7 @@ def print_usage():
             -t --times execute times
             -s --show_df whether to show df
         """
-        )
+    )
 
 
 
