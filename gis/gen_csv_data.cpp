@@ -138,10 +138,10 @@ const std::vector<std::string> st_distance_pool = {
 const std::vector<std::string> st_geomfromgeojson_pool = {
         "{\"type\":\"Polygon\",\"coordinates\":[[[0,0],[0,1],[1,1],[1,0],[0,0]]]}",
         "{\"type\":\"Point\",\"coordinates\":[125.6, 10.1]}",
-        "{\"coordinates\": [[1.0, 1.0], [3.0, 4.0]], \"type\": \"Multipolygon\"}",
-        "{\"coordinates\": [[1.0, 1.0], [1.0, 2.0], [2.0, 3.0]], \"type\": \"Linestring\"}",
+        //"{\"coordinates\": [[1.0, 1.0], [3.0, 4.0]], \"type\": \"Multipolygon\"}",
+        //"{\"coordinates\": [[1.0, 1.0], [1.0, 2.0], [2.0, 3.0]], \"type\": \"Linestring\"}",
         "{\"coordinates\": [[[0.0, 0.0], [0.0, 4.0], [4.0, 4.0], [0.0, 0.0]]], \"type\": \"Polygon\"}",
-        "{\"coordinates\": [[[[0.0, 0.0], [1.0, -1.0], [1.0, 1.0], [-2.0, 3.0], [0.0, 0.0]]]], \"type\": \"Multipolygon\"}",
+        //"{\"coordinates\": [[[[0.0, 0.0], [1.0, -1.0], [1.0, 1.0], [-2.0, 3.0], [0.0, 0.0]]]], \"type\": \"Multipolygon\"}",
 
 };
 
@@ -266,11 +266,12 @@ static void write_data(const std::string &path, const std::string &pattern_name,
     while (has_remain) {
         batch.clear();
         for (auto j = 0; j != batch_size; ++j) {
-            auto i = random() % pool.size();
+            auto i = j % pool.size();
             batch.append(pool[i] + '\n');
         }
         file << batch;
         total -= batch_size;
+        batch_size = std::min(batch_size, total);
         has_remain = (total > 0);
     }
 
