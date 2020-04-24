@@ -266,7 +266,7 @@ static void write_data(const std::string &path, const std::string &pattern_name,
     while (has_remain) {
         batch.clear();
         for (auto j = 0; j != batch_size; ++j) {
-            auto i = random() % pool.size();
+            auto i = j % pool.size();
             batch.append(pool[i] + '\n');
         }
         file << batch;
